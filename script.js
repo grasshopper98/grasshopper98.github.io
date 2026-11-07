@@ -11,10 +11,14 @@ d3.json("data.json").then(function (data) {
         .attr("preserveAspectRatio", "xMidYMid meet");
 
     const graphGroup = svgContainer.append("g");
+    let tooltipNode = null;
 
     const zoom = d3.zoom()
         .scaleExtent([0.02, 8])
-        .on("zoom", (event) => graphGroup.attr("transform", event.transform));
+        .on("zoom", (event) => {
+            graphGroup.attr("transform", event.transform);
+            positionTooltip();
+        });
 
     svgContainer.call(zoom).on("dblclick.zoom", null);
 
@@ -29,6 +33,15 @@ d3.json("data.json").then(function (data) {
     function setRunning(running) {
         isRunning = running;
         runButton.textContent = running ? "Stop" : "Go";
+    }
+
+    function positionTooltip() {
+        if (!tooltipNode) return;
+        const [x, y] = d3.zoomTransform(svgContainer.node()).apply([tooltipNode.x, tooltipNode.y]);
+        const tooltipElement = tooltip.node();
+        const left = Math.max(8, Math.min(x + 14, width - tooltipElement.offsetWidth - 8));
+        const top = Math.max(8, Math.min(y + 14, height - tooltipElement.offsetHeight - 8));
+        tooltip.style("left", `${left}px`).style("top", `${top}px`);
     }
 
     // slider-controlled force parameters
@@ -53,6 +66,10 @@ d3.json("data.json").then(function (data) {
             fitToViewOnce();
         });
 
+    data.nodes.forEach(d => {
+        d.x += width / 2;
+        d.y += height / 2;
+    });
     simulation.stop();
 
     // the force layout spreads far beyond the viewBox with ~1500 nodes; zoom-to-fit once it settles
@@ -103,6 +120,8 @@ d3.json("data.json").then(function (data) {
         node
             .attr("cx", d => d.x)
             .attr("cy", d => d.y);
+
+        positionTooltip();
     }
 
     function drag(simulation) {
@@ -151,21 +170,22 @@ d3.json("data.json").then(function (data) {
 
     function handleClick(event, d) {
         selectedCountry = d.country;
+        tooltipNode = d;
         highlightCountry(selectedCountry);
         tooltip
             .style("opacity", 1)
-            .style("left", `${event.offsetX + 14}px`)
-            .style("top", `${event.offsetY + 14}px`)
             .html(`
                 <strong>${d.name}</strong><br>
                 Country: ${d.country}<br>
                 Co-authored papers (degree): ${d.degree}
             `);
+        positionTooltip();
         event.stopPropagation();
     }
 
     svgContainer.on("click", () => {
         selectedCountry = null;
+        tooltipNode = null;
         clearHighlight();
         tooltip.style("opacity", 0);
     });
