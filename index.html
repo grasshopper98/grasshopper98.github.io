@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorship Network</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div id="graph-container">
+        <svg></svg>
+        <div id="tooltip"></div>
+        <section id="legend">
+            <h2>Affiliation country</h2>
+            <div id="legend-items"></div>
+        </section>
+    </div>
+    <aside id="controls">
+        <h1>Co-authorship Network</h1>
+        <p class="controls-intro">Adjust the sliders before selecting Go. Drag nodes to reposition them; click a node to keep its country highlighted, then click empty graph space to clear.</p>
+
+        <section class="control-group">
+            <label for="chargeSlider">Charge strength <span id="chargeValue"></span></label>
+            <input type="range" id="chargeSlider" min="-30" max="-1" value="-20" step="1">
+            <p class="hint">Repulsion between every pair of nodes. More negative = nodes push apart harder and the graph spreads out more.</p>
+        </section>
+
+        <section class="control-group">
+            <label for="linkDistanceSlider">Link distance <span id="linkDistanceValue"></span></label>
+            <input type="range" id="linkDistanceSlider" min="50" max="100" value="75" step="5">
+            <p class="hint">Target distance between two co-authors connected by a link.</p>
+        </section>
+
+        <section class="control-group">
+            <label for="linkStrengthSlider">Link strength <span id="linkStrengthValue"></span></label>
+            <input type="range" id="linkStrengthSlider" min="0" max="1" value="0.5" step="0.05">
+            <p class="hint">How rigidly linked nodes are pulled toward the target link distance.</p>
+        </section>
+
+        <section class="control-group">
+            <label for="collideSlider">Collision radius factor <span id="collideValue"></span></label>
+            <input type="range" id="collideSlider" min="0.5" max="3" value="1.2" step="0.1">
+            <p class="hint">Multiplier on each node's radius used to keep circles from overlapping.</p>
+        </section>
+
+        <button id="runButton" type="button">Go</button>
+        <button id="beginningButton" type="button">Start from beginning</button>
+        <button id="resetButton" type="button">Reset to defaults</button>
+    </aside>
+    <script src="script.js" type="module"></script>
+</body>
+</html>
+
+
